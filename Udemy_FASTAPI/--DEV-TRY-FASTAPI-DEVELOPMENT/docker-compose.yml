@@ -1,0 +1,46 @@
+version : '3.9'
+
+networks:
+  dev-network:
+    driver: bridge
+
+services:
+
+  dev-db: #development database
+
+    image: postgres:16.1-alpine3.19
+    restart: always
+    env_file:
+      - ./.env
+    ports: 
+      - "5433:5432" #the first one is the comuter port numner
+      #we re here mapping a local port to the container port
+      #a lot of software will have a default port so make sure check that
+      #also what we cant do if you're to use multiple postgres database you cant use the same port
+      # lets say a dev-test database too, we re gonna need to use separate numbers 
+      # ex 5433:5432 for the dev_db and 5434:5432 for the dev-test
+      # birinciyi de degistirdik o durumda iginc
+
+      #we need ot make sure the first number (computer port number is different
+      # the second internal can be same bcz this is obv internalized, this is in the container
+
+
+      #you can check the documentation page of postgre on docker hub
+      # you see you'll need to provide some additional info like password
+ 
+
+    volumes:
+      - ./scripts:/docker-entrypoint-initdb.d
+    networks:
+      - dev-network
+
+
+  adminer: #copied from its Docker Hub documentation (of adminer)
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+    networks:
+      - dev-network
+
+name: fastapi-development #bunu specify etmeyince workspce rpeo'nun adini kullaniyo
